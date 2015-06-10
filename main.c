@@ -10,7 +10,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-
 #ifdef DEBUG
 #define DEBUG_PRINT(...) do{ fprintf( stderr, __VA_ARGS__ ); } while( false )
 #else
@@ -141,7 +140,7 @@ cycle_t cycles[] = {
 
 
 // maybe should CAPITALIZE these consts
-const size_t PERSON_COUNT = 1000;
+const size_t PERSON_COUNT = 100000;
 const size_t STATE_COUNT = sizeof(states) / sizeof(state_t);
 const size_t MODEL_COUNT = sizeof(models) / sizeof(model_t);
 const size_t CYCLE_COUNT = sizeof(cycles) / sizeof(cycle_t);
@@ -247,6 +246,7 @@ void init_masters(void)
 
 void masters_push(id_t cycle_id, id_t state_id, id_t model_id, id_t person_id)
 {
+    DEBUG_PRINT("run_cycle(): cycle_id=%d person_id=%d model_id=%d state_id=%d\n", cycle_id, person_id, model_id, state_id);
     masters[master_count].cycle_id = cycle_id;
     masters[master_count].state_id = state_id;
     masters[master_count].model_id = model_id;
@@ -441,8 +441,10 @@ const uint INTERACTIONS_MAX = MODEL_COUNT * MODEL_COUNT;
    to avoid accidental conflicts with local variables */
 void run_cycle(id_t cycle_id, id_t person_id, id_t model_id)
 {
-    state_t *cur_state = person_get_state(person_id, cycle_id, model_id);
-    id_t *cur_state_ids = person_get_states(person_id, cycle_id);
+    // DEBUG_PRINT("run_cycle(): cycle_id=%d person_id=%d model_id=%d\n", cycle_id, person_id, model_id);
+
+    state_t *cur_state = person_get_state(person_id, cycle_id - 1, model_id);
+    id_t *cur_state_ids = person_get_states(person_id, cycle_id - 1);
     /* always in one state for each model */
     size_t cur_states_count = MODEL_COUNT;
 
@@ -512,15 +514,15 @@ void run_model(void)
     for (int i = 0; i < MODEL_COUNT; ++i)
         model_indices[i] = i;
 
-    /* for every cycle */
-    for (int cid = 0; cid < CYCLE_COUNT; ++cid)
+    /* for every cycle, starting at 1 (first real cycle) */
+    for (int cid = 1; cid < CYCLE_COUNT; ++cid)
     {
         DEBUG_PRINT("run_model(): cycle %d start\n", cid);
         /* for every person */
         for (int pid = 0; pid < PERSON_COUNT; ++pid)
         {
             /* for every model, in random order */
-            suffle(model_indices, MODEL_COUNT);
+            // suffle(model_indices, MODEL_COUNT);
             for (int i = 0; i < MODEL_COUNT; ++i)
             {
                 id_t mid = model_indices[i];

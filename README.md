@@ -3,3 +3,4 @@
 ## Inital improvements over go model
 
 * Model#get_uninitialized_state() is now precomputated
+* Model#get_destination_probabilites() is now precomputed

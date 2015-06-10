@@ -1,6 +1,6 @@
 CC ?= gcc
 CFLAGS += -std=gnu99
-CFLAGS += -g -DDEBUG=1
+CFLAGS += -g
 
 all:
 	$(CC) $(CFLAGS) main.c -o bin/main.o
