@@ -1,3 +1,4 @@
 bin/
 tmp/
 .gdb_history
+.DS_Store
